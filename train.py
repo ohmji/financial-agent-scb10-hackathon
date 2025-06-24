@@ -10,7 +10,7 @@ from transformers import (
     set_seed,
 )
 from peft import get_peft_model, LoraConfig, TaskType
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 import torch
 
 # Configuration
@@ -18,8 +18,10 @@ model_name = "scb10x/typhoon2.1-gemma3-2b"
 output_dir = "./finetuned-typhoon2b"
 set_seed(42)
 
-# STEP 1: Load dataset from Hugging Face dataset
-dataset = load_dataset("airesearch/WangchanThaiInstruct", split="train")
+# STEP 1: Load and concatenate datasets from Hugging Face
+ds1 = load_dataset("airesearch/WangchanThaiInstruct", split="train")
+ds2 = load_dataset("PowerInfer/LONGCOT-Refine-500K", split="train")
+ds3 = load_dataset("Josephgflowers/Finance-Instruct-500k", split="train")
 
 # STEP 2: Prompt template
 def format_prompt(example):
@@ -31,8 +33,11 @@ def format_prompt(example):
     prompt += f"\n### Response:\n{example['output']}"
     return {"text": prompt}
 
-# Format the dataset with the prompt template
-dataset = dataset.map(format_prompt)
+# Format the datasets with the prompt template before concatenation
+ds1 = ds1.map(format_prompt)
+ds2 = ds2.map(format_prompt)
+ds3 = ds3.map(format_prompt)
+dataset = concatenate_datasets([ds1, ds2, ds3])
 
 # STEP 3: Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
