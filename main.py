@@ -6,6 +6,35 @@ from dotenv import load_dotenv
 import os
 # LangChain and HuggingFace imports for local pipeline
 from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import BitsAndBytesConfig
+import torch
+
+# HuggingFace model setup
+hf_model_id = "openthaigpt/openthaigpt-1.6-72b-instruct"
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16
+)
+
+tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    hf_model_id,
+    device_map="auto",
+    quantization_config=bnb_config
+)
+
+def query_huggingface(prompt: str) -> str:
+    try:
+        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        outputs = model.generate(**inputs, max_new_tokens=100)
+        return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    except Exception as e:
+        print("HF Error:", e)
+        return "ERROR"
 
 # Add Typhoon ChatOpenAI LLM
 from langchain_openai import ChatOpenAI
@@ -45,7 +74,7 @@ def main():
     for _, row in enumerate(questions, 1):
         prompt = build_prompt(row["query"])
         print("Prompt:", prompt[:100], "...")
-        answer = query_mixtral(prompt)
+        answer = query_huggingface(prompt)
         clean_answer = post_process_answer(answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
