@@ -55,7 +55,7 @@ def main():
         prompt = build_prompt(question)
         print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(prompt)
-        print("Raw answer:", raw_answer)
+        # print("Raw answer:", raw_answer)
         clean_answer = raw_answer.strip()
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
