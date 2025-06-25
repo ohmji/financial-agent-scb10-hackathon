@@ -50,8 +50,12 @@ def post_process_answer(raw_answer: str) -> str:
     Extracts the first valid keyword from the raw answer.
     Accepts: A, B, C, D, E, Rise, Fall
     """
-    match = re.search(r"\b(A|B|C|D|E|Rise|Fall)\b", raw_answer)
-    return match.group(1) if match else "INVALID"
+    match = re.search(r"(?i)^answer[:\-]?\s*(A|B|C|D|E|Rise|Fall)\b", raw_answer.strip())
+    if match:
+        return match.group(1)
+    # fallback to first standalone choice if above not found
+    fallback = re.search(r"\b(A|B|C|D|E|Rise|Fall)\b", raw_answer)
+    return fallback.group(1) if fallback else "INVALID"
 
 def main():
     df = pd.read_csv("data/test.csv")
