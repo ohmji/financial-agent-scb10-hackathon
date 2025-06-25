@@ -13,7 +13,7 @@ load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "aisingapore/Gemma2-9b-WangchanLIONv2-instruct"
+hf_model_id = "Konthee/Llama-3.1-8B-ThaiInstruct"
 
 
 tokenizer = AutoTokenizer.from_pretrained(hf_model_id, use_fast=False)
