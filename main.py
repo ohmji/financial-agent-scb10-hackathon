@@ -11,7 +11,7 @@ import re
 
 def extract_choice(answer: str) -> str:
     matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer, re.IGNORECASE)
-    return matches[-1] if matches else "ERROR"
+    return matches[-1].upper() if matches else "ERROR"
 
 load_dotenv()
 
@@ -20,7 +20,6 @@ load_dotenv()
 hf_model_id = "openthaigpt/openthaigpt1.5-14b-instruct"
 
 MAX_NEW_TOKENS = 10
-TEMPERATURE = 0.1
 SLEEP_TIME = 1.5
 
 
@@ -32,11 +31,13 @@ model = AutoModelForCausalLM.from_pretrained(
 
 def query_huggingface(prompt: str) -> str:
     try:
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        inputs = tokenizer(prompt, return_tensors="pt")
+        inputs = inputs.to(model.device)
         outputs = model.generate(
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
-            do_sample=False
+            do_sample=False,
+            pad_token_id=tokenizer.eos_token_id
         )
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
     except Exception as e:
@@ -51,16 +52,16 @@ def query_huggingface(prompt: str) -> str:
 def main():
     df = pd.read_csv("data/test.csv")
     results = []
-    questions = df.dropna(subset=['query']).to_dict(orient='records')
-    for row in questions:
-        question = row["query"].strip()
+    questions = df.dropna(subset=['query'])
+    for row in questions.itertuples():
+        question = row.query
         prompt = build_prompt(question)
         print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(prompt)
         print("Raw answer:", raw_answer)
         clean_answer = extract_choice(raw_answer)
         print("Answer:", clean_answer)
-        results.append({"id": row["id"], "answer": clean_answer})
+        results.append({"id": row.id, "answer": clean_answer})
         time.sleep(SLEEP_TIME)  # กัน rate limit
 
     # Fill unanswered entries with empty strings
