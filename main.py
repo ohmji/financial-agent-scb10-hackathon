@@ -13,7 +13,7 @@ load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "Konthee/Llama-3.1-8B-ThaiInstruct"
+hf_model_id = "Konthee/Qwen2.5-7B-ThaiInstruct"
 
 MAX_NEW_TOKENS = 10
 TEMPERATURE = 0.1
@@ -23,7 +23,7 @@ SLEEP_TIME = 1.5
 tokenizer = AutoTokenizer.from_pretrained(hf_model_id, use_fast=False)
 model = AutoModelForCausalLM.from_pretrained(
     hf_model_id,
-    device_map="auto",
+    torch_dtype="auto", device_map="auto"
 )
 
 def query_huggingface(prompt: str) -> str:
@@ -33,7 +33,7 @@ def query_huggingface(prompt: str) -> str:
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
             temperature=TEMPERATURE,
-            top_p=0.9,
+            top_p=0.5,
             do_sample=True
         )
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
@@ -62,7 +62,7 @@ def main():
         prompt = build_prompt(question)
         print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(prompt)
-        print("Raw answer:", raw_answer)
+        # print("Raw answer:", raw_answer)
         clean_answer = post_process_answer(raw_answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
