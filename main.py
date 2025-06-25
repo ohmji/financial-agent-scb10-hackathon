@@ -9,6 +9,10 @@ from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import re
 
+def extract_choice(answer: str) -> str:
+    match = re.search(r"\b(A|B|C|D|E|Rise|Fall)\b", answer, re.IGNORECASE)
+    return match.group(1).upper() if match else "ERROR"
+
 load_dotenv()
 
 
@@ -56,7 +60,7 @@ def main():
         # print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(question.strip())
         # print("Raw answer:", raw_answer)
-        clean_answer = raw_answer.strip()
+        clean_answer = extract_choice(raw_answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
         time.sleep(SLEEP_TIME)  # กัน rate limit
