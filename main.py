@@ -19,7 +19,7 @@ load_dotenv()
 # HuggingFace model setup
 hf_model_id = "Naphon/Phi-4-thai-financial-instruct"
 
-MAX_NEW_TOKENS = 30
+MAX_NEW_TOKENS = 50
 TEMPERATURE = 0.1
 SLEEP_TIME = 1.5
 
@@ -54,9 +54,9 @@ def main():
     questions = df.dropna(subset=['query']).to_dict(orient='records')
     for row in questions:
         question = row["query"].strip()
-        # prompt = build_prompt(question)
-        # print("Prompt:", prompt[:100], "...")
-        raw_answer = query_huggingface(question.strip())
+        prompt = build_prompt(question)
+        print("Prompt:", prompt[:100], "...")
+        raw_answer = query_huggingface(prompt)
         print("Raw answer:", raw_answer)
         clean_answer = extract_choice(raw_answer)
         print("Answer:", clean_answer)
