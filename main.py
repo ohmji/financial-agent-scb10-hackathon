@@ -19,7 +19,7 @@ load_dotenv()
 # HuggingFace model setup
 hf_model_id = "Konthee/Llama-3.1-8B-ThaiInstruct"
 
-MAX_NEW_TOKENS = 3
+MAX_NEW_TOKENS = 1
 TEMPERATURE = 0.1
 SLEEP_TIME = 1.5
 
@@ -60,7 +60,7 @@ def main():
         # print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(question.strip())
         # print("Raw answer:", raw_answer)
-        clean_answer = raw_answer
+        clean_answer = extract_choice(raw_answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
         time.sleep(SLEEP_TIME)  # กัน rate limit
