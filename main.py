@@ -17,7 +17,7 @@ load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "Surasan/qwen2.5-7b-financial-thai-4bit-full"
+hf_model_id = "Naphon/Phi-4-thai-financial-instruct"
 
 MAX_NEW_TOKENS = 1
 TEMPERATURE = 0.1
