@@ -19,7 +19,7 @@ load_dotenv()
 # HuggingFace model setup
 hf_model_id = "Naphon/Phi-4-thai-financial-instruct"
 
-MAX_NEW_TOKENS = 1
+MAX_NEW_TOKENS = 10
 TEMPERATURE = 0.1
 SLEEP_TIME = 1.5
 
