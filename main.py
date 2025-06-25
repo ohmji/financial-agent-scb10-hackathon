@@ -52,9 +52,9 @@ def main():
     questions = df.dropna(subset=['query']).to_dict(orient='records')
     for row in questions:
         question = row["query"].strip()
-        prompt = build_prompt(question)
-        print("Prompt:", prompt[:100], "...")
-        raw_answer = query_huggingface(prompt)
+        # prompt = build_prompt(question)
+        # print("Prompt:", prompt[:100], "...")
+        raw_answer = query_huggingface(question.strip())
         # print("Raw answer:", raw_answer)
         clean_answer = raw_answer.strip()
         print("Answer:", clean_answer)
