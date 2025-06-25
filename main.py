@@ -15,6 +15,10 @@ load_dotenv()
 # HuggingFace model setup
 hf_model_id = "Konthee/Llama-3.1-8B-ThaiInstruct"
 
+MAX_NEW_TOKENS = 10
+TEMPERATURE = 0.1
+SLEEP_TIME = 1.5
+
 
 tokenizer = AutoTokenizer.from_pretrained(hf_model_id, use_fast=False)
 model = AutoModelForCausalLM.from_pretrained(
@@ -25,7 +29,7 @@ model = AutoModelForCausalLM.from_pretrained(
 def query_huggingface(prompt: str) -> str:
     try:
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-        outputs = model.generate(**inputs, max_new_tokens=10,temperature=0)
+        outputs = model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS, temperature=TEMPERATURE)
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
     except Exception as e:
         print("HF Error:", e)
@@ -47,14 +51,15 @@ def main():
     df = pd.read_csv("data/test.csv")
     results = []
     questions = df.dropna(subset=['query']).to_dict(orient='records')
-    for _, row in enumerate(questions, 1):
-        prompt = build_prompt(row["query"])
+    for row in questions:
+        question = row["query"].strip()
+        prompt = build_prompt(question)
         print("Prompt:", prompt[:100], "...")
-        answer = query_huggingface(prompt)
-        clean_answer = post_process_answer(answer)
+        raw_answer = query_huggingface(prompt)
+        clean_answer = post_process_answer(raw_answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
-        time.sleep(1.5)  # กัน rate limit
+        time.sleep(SLEEP_TIME)  # กัน rate limit
 
     # Fill unanswered entries with empty strings
     full_ids = df["id"].tolist()
