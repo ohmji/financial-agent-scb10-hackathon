@@ -4,31 +4,24 @@ import time
 from prompts import build_prompt
 from dotenv import load_dotenv
 import os
-# LangChain and HuggingFace imports for local pipeline
-from transformers import pipeline
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from llama_cpp import Llama
 import re
+import multiprocessing
 
 load_dotenv()
 
-
-# HuggingFace model setup
-hf_model_id = "aisingapore/Gemma2-9b-WangchanLIONv2-instruct"
-
-
-tokenizer = AutoTokenizer.from_pretrained(hf_model_id, use_fast=False)
-model = AutoModelForCausalLM.from_pretrained(
-    hf_model_id,
-    device_map="auto",
+model = Llama(
+    model_path="models/Qwen2.5-7B-ThaiInstruct.Q4_K_M.gguf",
+    n_threads=multiprocessing.cpu_count(),
+    n_ctx=2048
 )
 
 def query_huggingface(prompt: str) -> str:
     try:
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-        outputs = model.generate(**inputs, max_new_tokens=100)
-        return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+        output = model(prompt, max_tokens=100, stop=["</s>"])
+        return output["choices"][0]["text"].strip()
     except Exception as e:
-        print("HF Error:", e)
+        print("LLM Error:", e)
         return "ERROR"
 
 
