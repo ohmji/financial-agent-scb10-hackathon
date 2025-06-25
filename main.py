@@ -17,9 +17,9 @@ load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "Surasan/qwen3-14b-unsloth-bnb-qa-lora_full_3000"
+hf_model_id = "openthaigpt/openthaigpt1.5-14b-instruct"
 
-MAX_NEW_TOKENS = 50
+MAX_NEW_TOKENS = 10
 TEMPERATURE = 0.1
 SLEEP_TIME = 1.5
 
