@@ -34,7 +34,8 @@ model = AutoModelForCausalLM.from_pretrained(
 
 def query_huggingface(prompt: str) -> str:
     try:
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        inputs = tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
         outputs = model.generate(
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
