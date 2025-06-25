@@ -33,7 +33,7 @@ def query_huggingface(prompt: str) -> str:
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
             temperature=TEMPERATURE,
-            top_p=0.9,
+            top_p=0.5,
             do_sample=True
         )
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
