@@ -13,7 +13,7 @@ load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "Konthee/Qwen2.5-7B-ThaiInstruct"
+hf_model_id = "Konthee/Llama-3.1-8B-ThaiInstruct"
 
 MAX_NEW_TOKENS = 10
 TEMPERATURE = 0.1
