@@ -10,17 +10,14 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import re
 
 def extract_choice(answer: str) -> str:
-    matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer)
-    if not matches:
-        return "ERROR"
-    choice = matches[-1]
-    return choice if choice in {"Rise", "Fall"} else choice.upper()
+    matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer, re.IGNORECASE)
+    return matches[-1] if matches else "ERROR"
 
 load_dotenv()
 
 
 # HuggingFace model setup
-hf_model_id = "openthaigpt/openthaigpt1.5-14b-instruct"
+hf_model_id = "openthaigpt/openthaigpt-1.6-72b-instruct"
 
 MAX_NEW_TOKENS = 10
 SLEEP_TIME = 1.5
