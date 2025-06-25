@@ -3,6 +3,7 @@ import pandas as pd
 import time
 from prompts import build_prompt
 from dotenv import load_dotenv
+import torch
 import os
 # LangChain and HuggingFace imports for local pipeline
 from transformers import pipeline
@@ -27,7 +28,7 @@ SLEEP_TIME = 1.5
 tokenizer = AutoTokenizer.from_pretrained(hf_model_id, use_fast=False)
 model = AutoModelForCausalLM.from_pretrained(
     hf_model_id,
-    torch_dtype="auto", device_map="auto"
+    torch_dtype=torch.float16, device_map="auto"
 )
 
 def query_huggingface(prompt: str) -> str:
