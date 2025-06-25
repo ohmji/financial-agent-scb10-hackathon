@@ -11,7 +11,7 @@ import re
 
 def extract_choice(answer: str) -> str:
     matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer, re.IGNORECASE)
-    return matches[-1].upper() if matches else "ERROR"
+    return matches[-1] if matches else "ERROR"
 
 load_dotenv()
 
