@@ -10,8 +10,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import re
 
 def extract_choice(answer: str) -> str:
-    matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer, re.IGNORECASE)
-    return matches[-1].upper() if matches else "ERROR"
+    matches = re.findall(r"\b(A|B|C|D|E|Rise|Fall)\b", answer)
+    if not matches:
+        return "ERROR"
+    choice = matches[-1]
+    return choice if choice in {"Rise", "Fall"} else choice.upper()
 
 load_dotenv()
 
