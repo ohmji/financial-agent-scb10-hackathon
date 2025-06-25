@@ -29,7 +29,13 @@ model = AutoModelForCausalLM.from_pretrained(
 def query_huggingface(prompt: str) -> str:
     try:
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-        outputs = model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS, temperature=TEMPERATURE)
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=MAX_NEW_TOKENS,
+            temperature=TEMPERATURE,
+            top_p=0.9,
+            do_sample=True
+        )
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
     except Exception as e:
         print("HF Error:", e)
@@ -56,6 +62,7 @@ def main():
         prompt = build_prompt(question)
         print("Prompt:", prompt[:100], "...")
         raw_answer = query_huggingface(prompt)
+        print("Raw answer:", raw_answer)
         clean_answer = post_process_answer(raw_answer)
         print("Answer:", clean_answer)
         results.append({"id": row["id"], "answer": clean_answer})
