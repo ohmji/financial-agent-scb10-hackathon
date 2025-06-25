@@ -36,7 +36,6 @@ def query_huggingface(prompt: str) -> str:
         outputs = model.generate(
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
-            temperature=TEMPERATURE,
             do_sample=False
         )
         return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
